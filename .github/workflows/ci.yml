@@ -31,7 +31,6 @@ jobs:
       - name: Buildah build
         id: build-image
         uses: redhat-actions/buildah-build@v2
-        id: build_image_multiarch
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: latest v1
