@@ -1,6 +1,5 @@
 FROM debian:11-slim
 
-LABEL org.opencontainers.image.source=https://github.com/alecunsolo/debian-base-systemd
 LABEL org.opencontainers.image.description="Basic systemd-enabled debian image"
 LABEL org.opencontainers.image.licenses=MIT
 
