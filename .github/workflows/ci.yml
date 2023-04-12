@@ -1,0 +1,51 @@
+---
+name: CI
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/README.md'
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    env:
+      IMAGE_NAME: ${{ github.repository }}
+      REGISTRY: ghcr.io
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Buildah
+        uses: redhat-actions/buildah-build@v2
+      - name: Install qemu dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+      - name: Buildah build
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        id: build_image_multiarch
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: latest v1
+          archs: amd64, arm64
+          oci: true
+          containerfiles: |
+            ./Dockerfile
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+      - name: Push to ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
