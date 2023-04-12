@@ -18,7 +18,7 @@ jobs:
       contents: read
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ env.REGISTRY}}/${{ github.repository }}
+      IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ${{ env.IMAGE_NAME }}
+          image: ${{ env.REGISTRY}}/${{ env.IMAGE_NAME }}
           tags: latest v1
           archs: amd64, arm64
           oci: true
